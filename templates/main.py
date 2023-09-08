@@ -68,7 +68,7 @@ def send_to_socket_server(username, message_text):
 
 
     # Встановлення з'єднання з Socket сервером
-    server_address = ('localhost', 5000)
+    server_address = ('192.168.0.107', 5000)
 
 
     # Створення сокету
