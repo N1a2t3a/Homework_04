@@ -1,15 +1,13 @@
-from flask import Flask, request, render_template, send_from_directory  
+from flask import Flask, request, render_template, send_from_directory
 import socket
 import json
 from datetime import datetime
 import threading
-from socket_server import run_socket_server  
 
 app = Flask(__name__)
 
 # Функція для обробки статичних ресурсів (зображень)
-@app.route(('/static/logo.png'))
-
+@app.route('/static/<path:filename>')
 def static_files(filename):
     return send_from_directory('static', filename)
 
@@ -47,7 +45,7 @@ def message():
         existing_data[current_time] = data
 
         with open("data.json", "w") as file:
-            json.dump(existing_data, file, indent=4)  
+            json.dump(existing_data, file, indent=4)
 
     return render_template('message.html')
 
@@ -66,15 +64,33 @@ def send_to_socket_server(username, message_text):
     }
     data_str = json.dumps(data)
 
-
     # Встановлення з'єднання з Socket сервером
     server_address = ('192.168.0.107', 5000)
-
 
     # Створення сокету
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         sock.sendto(data_str.encode(), server_address)
 
+# Функція для запуску Socket сервера
+def run_socket_server():
+    # Встановлюємо адресу та порт сервера
+    server_address = ('192.168.0.107', 5000)
+
+    # Створюємо UDP сокет
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+        sock.bind(server_address)
+
+        print("Socket сервер запущено на порту 5000")
+
+        while True:
+            # Очікуємо на дані
+            data, _ = sock.recvfrom(1024)
+            # Розкодовуємо отримані дані з байтів в рядок
+            data_str = data.decode()
+            # Перетворюємо рядок у словник
+            data_dict = json.loads(data_str)
+            # Обробляємо дані
+            handle_data(data_dict)
 
 if __name__ == '__main__':
     # Запуск Socket сервера в окремому потоці
@@ -84,3 +100,4 @@ if __name__ == '__main__':
 
     # Запуск HTTP сервера на порту 3000
     app.run(port=3000, debug=True)
+
