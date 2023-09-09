@@ -65,7 +65,7 @@ def send_to_socket_server(username, message_text):
     data_str = json.dumps(data)
 
     # Встановлення з'єднання з Socket сервером
-    server_address = ('192.168.0.107', 5000)
+    server_address = ('192.168.0.107', 5001)
 
     # Створення сокету
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
@@ -74,13 +74,13 @@ def send_to_socket_server(username, message_text):
 # Функція для запуску Socket сервера
 def run_socket_server():
     # Встановлюємо адресу та порт сервера
-    server_address = ('192.168.0.107', 5000)
+    server_address = ('192.168.0.107', 5001)
 
     # Створюємо UDP сокет
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         sock.bind(server_address)
 
-        print("Socket сервер запущено на порту 5000")
+        print("Socket сервер запущено на порту 5001")
 
         while True:
             # Очікуємо на дані
@@ -98,6 +98,6 @@ if __name__ == '__main__':
     socket_server_thread.daemon = True
     socket_server_thread.start()
 
-    # Запуск HTTP сервера на порту 3000
-    app.run(port=3000, debug=True)
+    # Запуск HTTP сервера на порту 5001
+    app.run(port=5001, debug=True)
 
